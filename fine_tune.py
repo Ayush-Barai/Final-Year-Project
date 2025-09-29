@@ -40,3 +40,13 @@ def load_images(base_path, size=(128, 128)):
                 print(f"\nSkipping corrupt file pair due to error: {e}")
 
     return [np.array(profile_images), np.array(frontal_images)]
+
+def discriminator_loss(real_output, fake_output):
+    real_loss = binary_cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = binary_cross_entropy(tf.zeros_like(fake_output), fake_output)
+    return real_loss + fake_loss
+
+def generator_loss(fake_output, generated_images, real_images):
+    adversarial_loss = binary_cross_entropy(tf.ones_like(fake_output), fake_output)
+    l1_loss = tf.reduce_mean(tf.abs(real_images - generated_images))
+    return adversarial_loss + (L1_LOSS_LAMBDA * l1_loss)
